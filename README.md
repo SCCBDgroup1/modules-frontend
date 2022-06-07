@@ -1,3 +1,3 @@
-# modules-frontend
+# Info about our modules frontend!
 
 ## Brief more info...
