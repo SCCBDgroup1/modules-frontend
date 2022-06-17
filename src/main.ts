@@ -3,6 +3,17 @@ import {v4} from 'uuid'
 import Toastify from 'toastify-js'
 import "toastify-js/src/toastify.css"
 
+const API_URL = 'http://localhost:4000/api/';
+const API_URL_SIGN = 'http://localhost:4000/api/rsa/pubKey';
+
+const proveAPI = async () => {
+    fetch(API_URL_SIGN)
+    .then(response => response.json())
+    .then(data => {console.log(data)})
+}
+
+proveAPI();
+
 //querySelector selects an HTMLsomething
 //could be: FormElement, HTMLElement, HTMLInputElement, HTMLButtonElement, HTMLSelectElement, HTMLTextAreaElement
 const modules = document.querySelector<HTMLFormElement>('#modules')
