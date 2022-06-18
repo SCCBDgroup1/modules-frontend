@@ -2,17 +2,18 @@ import './style.css'
 import {v4} from 'uuid'
 import Toastify from 'toastify-js'
 import "toastify-js/src/toastify.css"
+import { serverPubKeyPromise } from './serverkeys'
+import * as bc from 'bigint-conversion'
 
-const API_URL = 'http://localhost:4000/api/';
-const API_URL_SIGN = 'http://localhost:4000/api/rsa/pubKey';
+//const API_URL = 'http://localhost:4000/api/';
+//const API_URL_KEYS1 = 'http://localhost:4000/api/rsa/pubKey';
 
-const proveAPI = async () => {
-    fetch(API_URL_SIGN)
-    .then(response => response.json())
-    .then(data => {console.log(data)})
+const proveKEYS = async () => {
+    const serverPubKey = await serverPubKeyPromise
+    console.log(serverPubKey.n)
 }
 
-proveAPI();
+proveKEYS();
 
 //querySelector selects an HTMLsomething
 //could be: FormElement, HTMLElement, HTMLInputElement, HTMLButtonElement, HTMLSelectElement, HTMLTextAreaElement
@@ -87,7 +88,7 @@ function renderTasks(tasks: Task[]) {
   //we not duplicate all list
   tasksList!.innerHTML = ''
 
-    tasks.forEach(task => {
+    tasks.forEach(async task => {
         //taskElement with many params inside
         const taskElement = document.createElement('div')
         taskElement.className='bg-zinc-800 mb-1 p-4 rounded-lg hover:bg-zinc-700 hover:cursor-pointer'
@@ -96,7 +97,10 @@ function renderTasks(tasks: Task[]) {
         header.className='flex justify-between'
 
         const message = document.createElement('span')
-        message.innerText = task.message
+        //message.innerText = task.message
+
+        //encrypt message for example
+        message.innerText = (await serverPubKeyPromise).encrypt(bc.textToBigint(task.message)).toString()
 
         //finally we add a button for delete the component
         //if we not use comment these three lines
@@ -123,6 +127,9 @@ function renderTasks(tasks: Task[]) {
         //comment these two lines if we not use
         const example = document.createElement('span')
         example.innerText = task.example
+
+        //finally we encrypt subtitle, example also
+        example.innerText = (await serverPubKeyPromise).encrypt(bc.textToBigint(task.example)).toString()
 
         taskElement.append(header)
 
