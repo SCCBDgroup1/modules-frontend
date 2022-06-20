@@ -179,11 +179,11 @@ function renderTasks(tasks: Task[]) {
 
         const example2 = document.createElement('p')
         // example2.innerText = task.example2
-        example2.innerText = blinding(bc.textToBigint(task.example2), await proveKEYS()).toString()
+        example2.innerText = blinding(bc.textToBigint(task.example2), await serverPubKeyPromise).toString()
         console.log("message 1:", task.example2)
         console.log("message 2:", example2.innerText)
 
-        const data3 = {message: example2.innerText}
+        //const data3 = {message: example2.innerText}
 
         // fetch('http://localhost:4000/api/rsa/sign', {
         //     method: 'POST',
