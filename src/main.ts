@@ -2,11 +2,9 @@ import './style.css'
 import {v4} from 'uuid'
 import Toastify from 'toastify-js'
 import "toastify-js/src/toastify.css"
-import { serverPubKeyPromise } from './serverkeys'
+import { serverPubKeyPromise, serverPaillierPubKeyPromise } from './serverkeys'
 import * as bc from 'bigint-conversion'
-
-//const API_URL = 'http://localhost:4000/api/';
-//const API_URL_KEYS1 = 'http://localhost:4000/api/rsa/pubKey';
+import {blinding} from './blindunblind'
 
 const proveKEYS = async () => {
     const serverPubKey = await serverPubKeyPromise
@@ -14,6 +12,13 @@ const proveKEYS = async () => {
 }
 
 proveKEYS();
+
+const provePAILLIERKEYS = async () => {
+    const serverPaillierPubKey = await serverPaillierPubKeyPromise
+    console.log(serverPaillierPubKey.n)
+}
+
+provePAILLIERKEYS();
 
 //querySelector selects an HTMLsomething
 //could be: FormElement, HTMLElement, HTMLInputElement, HTMLButtonElement, HTMLSelectElement, HTMLTextAreaElement
@@ -28,6 +33,7 @@ interface Task {
     id: string
     message: string
     example: string
+    example2: string
 }
 
 let tasks: Task[] = []
@@ -38,6 +44,7 @@ modules?.addEventListener('submit', (e) => {
 
     const message = modules['message'] as unknown as HTMLInputElement
     const example = modules['example'] as unknown as HTMLInputElement
+    const example2 = modules['example2'] as unknown as HTMLInputElement
 
     //show in console log the inputs
     //console.log(message.value)
@@ -47,6 +54,7 @@ modules?.addEventListener('submit', (e) => {
     tasks.push({
         message: message.value,
         example: example.value,
+        example2: example2.value,
         id: v4()
     })
 
@@ -101,6 +109,25 @@ function renderTasks(tasks: Task[]) {
 
         //encrypt message for example
         message.innerText = (await serverPubKeyPromise).encrypt(bc.textToBigint(task.message)).toString()
+        console.log("Clear message:", task.message)
+        console.log("Message inner normal:", message.innerText)
+
+        const data = {message: message.innerText}
+
+        fetch('http://localhost:4000/api/rsa/decrypt', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data=>{
+            console.log('Success:', data)
+        })
+        .catch((error)=>{
+            console.error('Error:', error)
+        })
 
         //finally we add a button for delete the component
         //if we not use comment these three lines
@@ -126,15 +153,58 @@ function renderTasks(tasks: Task[]) {
         //we create antoher param, example param as another span
         //comment these two lines if we not use
         const example = document.createElement('span')
-        example.innerText = task.example
+        // example.innerText = task.example
 
-        //finally we encrypt subtitle, example also
+        //finally we encrypt second term with paillier, example also
         example.innerText = (await serverPubKeyPromise).encrypt(bc.textToBigint(task.example)).toString()
+        console.log("Clear message:", task.example)
+        console.log("Message inner normal:", example.innerText)
+
+        const data2 = {message: example.innerText}
+
+        fetch('http://localhost:4000/api/paillier/decrypt', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data2)
+        })
+        .then(response => response.json())
+        .then(data2=>{
+            console.log('Success:', data2)
+        })
+        .catch((error)=>{
+            console.error('Error:', error)
+        })
+
+        const example2 = document.createElement('p')
+        // example2.innerText = task.example2
+        example2.innerText = blinding(bc.textToBigint(task.example2), await proveKEYS()).toString()
+        console.log("message 1:", task.example2)
+        console.log("message 2:", example2.innerText)
+
+        const data3 = {message: example2.innerText}
+
+        // fetch('http://localhost:4000/api/rsa/sign', {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json'
+        //     },
+        //     body: JSON.stringify(data3)
+        // })
+        // .then(response => response.json())
+        // .then(data3=>{
+        //     console.log('Success:', data3)
+        // })
+        // .catch((error)=>{
+        //     console.error('Error:', error)
+        // })
 
         taskElement.append(header)
 
         //and we add the example param
         taskElement.append(example)
+        taskElement.append(example2)
 
         //add the id
         const id = document.createElement('p')

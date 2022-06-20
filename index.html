@@ -11,15 +11,18 @@
     <div class="flex justify-center items-center h-screen gap-x-2">
       <form id="modules" class="bg-zinc-700 p-10 rounded-md max-w-md">
 
-        <label for="message" class="block">Title</label>
-        <input type="text" id="message" name="message" placeholder="write a title" class="bg-gray-800 px-1 py-1 w-full rounded-md mb-2"/>
+        <label for="message" class="block">Message encrypted with RSA</label>
+        <input type="text" id="message" name="message" placeholder="write a message" class="bg-gray-800 px-1 py-1 w-full rounded-md mb-2"/>
   
-        <label for="example" class="block">Content</label>
-        <input type="text" id="example" name="example" placeholder="write a content" class="bg-gray-800 px-1 py-1 w-full rounded-md mb-2"/>
+        <label for="example" class="block">Message encrypted with Paillier</label>
+        <input type="text" id="example" name="example" placeholder="write a message" class="bg-gray-800 px-1 py-1 w-full rounded-md mb-2"/>
+
+        <label for="example2" class="block">Unblinded Message</label>
+        <input type="text" id="example2" name="example2" placeholder="write a message" class="bg-gray-800 px-1 py-1 w-full rounded-md mb-2"/>
   
         <button class="bg-blue-600 px-3 py-1 rounded-md hover:bg-blue-500">Send</button>
 
-        <button id="buttonkeys" class="bg-blue-600 px-3 py-1 rounded-md hover:bg-blue-500">Request keys</button>
+        <!-- <button id="buttonkeys" class="bg-blue-600 px-3 py-1 rounded-md hover:bg-blue-500">Request keys</button> -->
   
       </form>
   
